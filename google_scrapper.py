@@ -5,10 +5,10 @@ import urllib
 import requests
 import http.cookiejar as cookielib
 from requests_html import HTMLSession
-from typing import Any, Tuple, Dict, List
+from typing import Any, Tuple, Dict, List, Generator, Tuple
 import json
 from pprint import pprint
-from utils.multithread import multithread_callable
+from utils.multithread import multithread_callable, chunks_input
 from pathlib import Path
 
 from utils.utils import put_cookies_in_jar
@@ -24,14 +24,14 @@ class CoordinatesScrapper(object):
     """
 
     USER_AGENT = "education_illustration 0.1"
-    BROWSER_PATH = f"{Path(__file__).parent}/geckodriver/geckodriver"
+    BROWSER_PATH = f"{Path(__file__).parent}/driver/geckodriver"
     IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC = 1
 
     # subject to Changes, double check
     ANCHOR_FOR_MULTIPLE_RESULTS = "m6QErb DxyBCb kA9KIf dS8AEf ecceSd"
     ANCHOR_ITEM_IN_RESULT_LIST = "hfpxzc"
 
-    def __init__(self, lang: str = "fr") -> None:
+    def __init__(self, lang: str = "fr", cookies: List[Dict[str, str]] = None) -> None:
         # Setup Driver
         options = webdriver.FirefoxOptions()
         options.add_argument(f"user-agent={self.USER_AGENT}")
@@ -42,7 +42,10 @@ class CoordinatesScrapper(object):
         self.driver.implicitly_wait(
             time_to_wait=self.IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC
         )
-        self.cookies = None
+        if cookies:
+            for cookie in cookies:
+                print(cookie)
+                self.driver.add_cookie(cookie)
         self.lang = lang
 
     def __enter__(self):
@@ -57,6 +60,10 @@ class CoordinatesScrapper(object):
         returns: a string of the current page html
         """
         return self.driver.page_source
+
+    @property
+    def driver_cookies(self):
+        self.driver.get_cookies()
 
     def validate_google_cookies(self) -> None:
         """
@@ -179,33 +186,62 @@ def safe_get(data: List[List[float | int]], *keys: int):
     return data
 
 
-def thread_result(thread_number: int):
-    search_examples = [
-        "Convent, Játiva",
-        "Hospital de la Caridad, Seville",
-        "Via Nicolò Lionello, 1, Udine",
-        "Castle chapel, Riom (Puy-de-Dôme)",
-        "Maryland Historical Society, Baltimore",
-        "Church of Santo Domingo el Antiguo, Toledo",
-        "Duomo, Sansepolcro",
-        "Museo de San Petronio, Bologna",
-        "Museo Nazionale di Villa Guinigi, Lucca",
-        "Stanza della Fama, Palazzo Vitelli a Sant'Egidio, Città di Castello",
-        "University of Liège, Liège",
-        "Convent church of St. Cyriakus, Gernrode",
-        "Silvacane Abbey, La Roque-d'Anthéron (Bouches-du-Rhône)",
-    ]
-
+def chunk_process_search(search_chunk: List[str]):
     with CoordinatesScrapper() as scrapper:
         scrapper.validate_google_cookies()
-        result = {}
-        for s_ in search_examples:
-            result[s_] = scrapper.get_coordinates(s_)
+        result = []
+        for s_ in search_chunk:
+            result.append(scrapper.get_coordinates(s_))
+
+        return result
+
+
+full_input = [
+    "Basilica, Monasterio de San Lorenzo, El Escorial",
+    "Villa dei Vescovi, Luvigliano di Torreglia",
+    "Église Saint-Étienne, Saint-Mihiel (Meuse)",
+    "Casino dell'Aurora, Palazzo Pallavicini, Rome",
+    "Duomo, Verona",
+    "Grimsby Dock Tower, Grimsby, North East Lincolnshire",
+    "Botanical Garden, Mechelen",
+    "Vatican Necropolis, Rome",
+    "San Giacomo degli Spagnoli, Naples",
+    "Villa Selvatico Emo Capodilista, Battaglia Terme",
+    "Church Treasury, Conques",
+    "Cathedral, Naumburg",
+    "Musée des Beaux-Arts, Blois",
+    "Villa Badoer, Fratta Polesine" "Piazza Navona, Rome",
+    "Yorkshire Museums, Middleton",
+    "Pinacoteca Comunale, Sansepolcro",
+    "Santa Prassede, Rome",
+    "Abegg-Stiftung, Bern",
+    "Boulevard Clovis 85-87, Brussels",
+    "Synagogue, Vienna",
+]
 
 
 if __name__ == "__main__":
-    thread_result(thread_number=1)
-    # thread_list = [{
-    #     "thread_number": i
-    # } for i in range(0, 1)]
-    # multithread_callable(func=thread_result, kwargs_list=thread_list)
+    NB_WORKERS = 4
+    import pprint
+
+    # Process results
+    chunks = [
+        {"input_list": chunk} for chunk in chunks_input(lst=full_input, n=NB_WORKERS)
+    ]
+
+    def process_chunk(input_list: List[str]) -> Dict[str, Tuple[str]]:
+        with CoordinatesScrapper() as scraper_driver:
+            scraper_driver.validate_google_cookies()
+            result = {}
+            for search_ in input_list:
+                result[search_] = scraper_driver.get_coordinates(search_str=search_)
+            return result
+
+    full_result = multithread_callable(
+        func=process_chunk, kwargs_list=chunks, nb_workers=NB_WORKERS
+    )
+
+    result = {}
+    for d in full_result:
+        result.update(d)
+    pprint.pprint(result)
