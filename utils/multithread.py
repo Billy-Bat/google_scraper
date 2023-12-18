@@ -28,7 +28,10 @@ def multithread_callable(
     kwargs_list: List[Dict[str, Any]] = None,
     nb_workers=64,
 ):
-    """ """
+    """ 
+    a function to multithread a callable function with a list of kwargs,
+    the functions returns a list of results
+    """
     results = []
     with ThreadPoolExecutor(max_workers=nb_workers) as executor:
         futures = [executor.submit(func, **kwargs) for kwargs in kwargs_list]

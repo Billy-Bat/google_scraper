@@ -25,16 +25,21 @@ class CoordinatesScrapper(object):
 
     USER_AGENT = "education_illustration 0.1"
     BROWSER_PATH = f"{Path(__file__).parent}/driver/geckodriver"
-    IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC = 1
+    IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC = 4
 
     # subject to Changes, double check
     ANCHOR_FOR_MULTIPLE_RESULTS = "m6QErb DxyBCb kA9KIf dS8AEf ecceSd"
     ANCHOR_ITEM_IN_RESULT_LIST = "hfpxzc"
 
-    def __init__(self, lang: str = "fr", cookies: List[Dict[str, str]] = None) -> None:
+    def __init__(self, 
+                 lang: str = "fr", 
+                 extra_options: List[str | Any] = None,
+                 cookies: List[Dict[str, str]] = None) -> None:
         # Setup Driver
         options = webdriver.FirefoxOptions()
         options.add_argument(f"user-agent={self.USER_AGENT}")
+        for option in extra_options:
+            options.add_argument(option)
         service = Service(executable_path=self.BROWSER_PATH)
         self.driver: webdriver.Firefox = webdriver.Firefox(
             service=service, options=options
@@ -143,6 +148,9 @@ class CoordinatesScrapper(object):
         makes the driver go to the given url
         """
         self.driver.get(url=url_link)
+        self.driver.implicitly_wait(
+            time_to_wait=self.IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC
+        )
 
     def go_to_first_result_from_multiple(self) -> None:
         """
@@ -155,7 +163,7 @@ class CoordinatesScrapper(object):
         link = top_result.get_attribute("href")
         self.search_on(link)
 
-    def get_coordinates(self, search_str: str, take_first_on_multiple_res: bool = True):
+    def get_coordinates(self, search_str: str, take_first_on_multiple_res: bool = True) -> Tuple[float, float]:
         """
         Retrieves coordinates given an search string,
         if Google Maps returns a list of result (i.e: it is uncertains about the result) the fcn
@@ -230,6 +238,13 @@ if __name__ == "__main__":
     ]
 
     def process_chunk(input_list: List[str]) -> Dict[str, Tuple[str]]:
+        """
+        process a chunk of input
+        
+        Args:intput_list: list of input to process
+        Returns: dict with input as keys and coordinates as values
+        
+        """
         with CoordinatesScrapper() as scraper_driver:
             scraper_driver.validate_google_cookies()
             result = {}
