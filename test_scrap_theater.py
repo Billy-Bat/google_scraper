@@ -26,7 +26,7 @@ if __name__ == """__main__""":
         with CoordinatesScrapper(extra_options=FirefoxOptions) as scrapper:
             scrapper.validate_google_cookies()
             for search_str in chunk_search_str:
-                chunk_result[search_str] = scrapper.get_coordinates(search_str=search_str)
+                chunk_result[search_str] = scrapper.get_maps_coordinates(search_str=search_str)
         return chunk_result
      
     pprint.pprint(input_chunks)

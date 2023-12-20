@@ -1,5 +1,6 @@
 import http.cookiejar as cookielib
-
+from PIL import Image
+from io import BytesIO
 
 def to_cookielib_cookie(selenium_cookie):
     return cookielib.Cookie(
@@ -26,3 +27,7 @@ def to_cookielib_cookie(selenium_cookie):
 def put_cookies_in_jar(selenium_cookies, cookie_jar):
     for cookie in selenium_cookies:
         cookie_jar.set_cookie(to_cookielib_cookie(cookie))
+
+def get_img_from_bytes(input_bytes: bytes) -> Image:
+    return Image.open(BytesIO(input_bytes))
+    

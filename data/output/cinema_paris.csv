@@ -1,28 +1,4 @@
 name;lat;long
-Max LInder Panorama Cinema Paris;48.87138100000001;2.3448472000000002
-UGC Opéra Cinema Paris;48.8713671;2.3353264
-L'Archipel Cinema Paris;48.87048249999999;2.3546014
-Brady Cinema Paris;48.8718347;2.3553788999999994
-Le Louxor Cinema Paris;48.883551000000004;2.3498565
-Majestic bastille Cinema Paris;48.8540409;2.3700045000000003
-MK2 Bastille côté Beaumarchais Cinema Paris;48.854633;2.3691557000000003
-MK2 Bastille côté Faubourg Saint-Antoine Cinema Paris;48.8531505;2.3708089
-Ecoles Cinéma Club Cinema Paris;48.8483276;2.3489641
-Epée de bois Cinema Paris;48.841279;2.3495529999999993
-Espace Saint-Michel Cinema Paris;48.8531011;2.3442403000000005
-Filmothéque du Quartier Latin Cinema Paris;48.849543;2.34281
-Grand Action Cinema Paris;48.8475196;2.352131
-Reflet Médicis Cinema Paris;48.84978410000001;2.3430386000000003
-Sudio Galande Cinema Paris;48.8516324;2.347113
-Sudio des Ursulines Cinema Paris;48.8427984;2.3420795000000005
-UGC Odéon Cinema Paris;48.8523497;2.3398787000000003
-UGC Rotonde Cinema Paris;48.8423998;2.3289602999999994
-Bretagne Cinema Paris;48.843750199999995;2.325004
-Musée d'Orsay Cinema Paris;48.859961399999996;2.3265614
-Balzac Cinema Paris;48.8729489;2.2998506
-Elysées Lincoln Cinema Paris;48.8704679;2.3032618
-Gaumont Champs-Elysées Marignan Cinema Paris;48.8694504;2.3071933
-MK2 Grand Palais Cinema Paris;48.865210999999995;2.3129866
 Thréatre du Marais Cinema Paris;48.866236;2.3577747999999996
 Luminor Hotel de ville Cinema Paris;48.8586513;2.3536193
 Centre Georges Pompidou Cinema Paris;48.860642000000006;2.352245
@@ -31,14 +7,46 @@ Maison européenne de la photographie Cinema Paris;48.8551679;2.3590571
 Champo Cinema Paris;48.8499773;2.3431382
 Cinéma du Panthéon Cinema Paris;48.8474127;2.3423381
 La clef Cinema Paris;48.8411518;2.3524658
-Lucernaire Cinema Paris;48.844246999999996;2.330402
-MK2 Odéon côté Saint-Germain Cinema Paris;48.8524764;2.3382057999999994
-MK2 Odéon côté Saint-Michel Cinema Paris;48.85223349999999;2.3428479999999996
-MK2 Parnasse Cinema Paris;48.8428423;2.3306495999999997
-Nouvel Odéon Cinema Paris;48.8507943;2.3418255
-Sain André des arts I et II Cinema Paris;48.8533859;2.3420633
-UGC Danton Cinema Paris;48.8521149;2.338948
-UGC Montparnasse Cinema Paris;48.84352440000001;2.3258615000000002
+Publicis Cinémas Cinema Paris;48.872747399999994;2.2971038999999998
+UGC Normandie Cinema Paris;48.8723543;2.3007666999999996
+Cinéma Paradiso Grand Palais Cinema Paris;48.865210999999995;2.3129866
+Galerie National du Jeu de Paume Cinema Paris;48.8657992;2.3240664
+Club de l'Etoile Cinema Paris;48.8761237;2.2953984000000003
+Cinq Caumartin Cinema Paris;48.875608199999995;2.3279219999999996
+Gaumont Opéra côté Capucines Cinema Paris;48.8711178;2.333878
+Gaumont Opéra côté Français Cinema Paris;48.8711178;2.333878
+Ecoles Cinéma Club Cinema Paris;48.8483276;2.3489641
+Epée de bois Cinema Paris;48.841279;2.3495529999999993
+Espace Saint-Michel Cinema Paris;48.8531011;2.3442403000000005
+Filmothéque du Quartier Latin Cinema Paris;48.849543;2.34281
+Grand Action Cinema Paris;48.8475196;2.352131
+Reflet Médicis Cinema Paris;48.84978410000001;2.3430386000000003
+Sudio Galande Cinema Paris;48.8516324;2.347113
+Sudio des Ursulines Cinema Paris;48.8427984;2.3420795000000005
+Max LInder Panorama Cinema Paris;48.87138100000001;2.3448472000000002
+UGC Opéra Cinema Paris;48.8713671;2.3353264
+L'Archipel Cinema Paris;48.87048249999999;2.3546014
+Brady Cinema Paris;48.8718347;2.3553788999999994
+Le Louxor Cinema Paris;48.883551000000004;2.3498565
+Majestic bastille Cinema Paris;48.8540409;2.3700045000000003
+MK2 Bastille côté Beaumarchais Cinema Paris;48.854633;2.3691557000000003
+MK2 Bastille côté Faubourg Saint-Antoine Cinema Paris;48.8531505;2.3708089
+UGC Ciné Cité les Halles Cinema Paris;48.8628147;2.3440602999999993
+Forum des images Cinema Paris;48.8624721;2.3450991
+Auditorium du Louvre Cinema Paris;48.8610216;2.3358581
+Gaumont Opéra côté Premier Cinema Paris;48.8711178;2.333878
+Le Grand Rex Cinema Paris;48.8705451;2.3476866
+MK2 Beaubourg Cinema Paris;48.861615199999996;2.3522089999999998
+Musée d'art et d'histoire du Judaïsme Cinema Paris;48.86101019999999;2.3556112
+Théatre de la Gaité-Lyrique Cinema Paris;48.8665593;2.3535511
+UGC Odéon Cinema Paris;48.8523497;2.3398787000000003
+UGC Rotonde Cinema Paris;48.8423998;2.3289602999999994
+Bretagne Cinema Paris;48.843750199999995;2.325004
+Musée d'Orsay Cinema Paris;48.859961399999996;2.3265614
+Balzac Cinema Paris;48.8729489;2.2998506
+Elysées Lincoln Cinema Paris;48.8704679;2.3032618
+Gaumont Champs-Elysées Marignan Cinema Paris;48.8694504;2.3071933
+MK2 Grand Palais Cinema Paris;48.865210999999995;2.3129866
 Centre Culturel Irlandais Cinema Paris;48.844045200000004;2.3459482
 Institut du monde arabe Cinema Paris;48.848925699999995;2.3572313
 Institut Finlandais Cinema Paris;48.8502448;2.3433506000000004
@@ -47,22 +55,14 @@ Les 3 Luxembourg Cinema Paris;48.8483692;2.3408192999999997
 L'Arlequin Cinema Paris;48.851135;2.3303775
 Christine Cinéma Club Cinema Paris;48.854518399999996;2.3402087
 Etoile Saint-Germain-des-Prés Cinema Paris;48.8546623;2.3333171999999993
-UGC Ciné Cité les Halles Cinema Paris;48.8628147;2.3440602999999993
-Forum des images Cinema Paris;48.8624721;2.3450991
-Auditorium du Louvre Cinema Paris;48.8610216;2.3358581
-Gaumont Opéra côté Premier Cinema Paris;48.8711178;2.333878
-Le Grand Rex Cinema Paris;48.8705451;2.3476866
-MK2 Beaubourg Cinema Paris;48.861615199999996;2.3522089999999998
-Musée d'art et d'histoire du Judaïsme Cinema Paris;48.86101019999999;2.3556112
-Théatre de la Gaité-Lyrique Cinema Paris;48.839301999999996;2.3231009999999994
-Pubilic Cinémas Cinema Paris;48.872747399999994;2.2971038999999998
-UGC Normandie Cinema Paris;48.8723543;2.3007666999999996
-Cinéma Paradiso Grand Palais Cinema Paris;48.865210999999995;2.3129866
-Galerie National du Jeu de Paume Cinema Paris;48.8657992;2.3240664
-Club de l'Etoile Cinema Paris;48.8761237;2.2953984000000003
-Ciq Caumartin Cinema Paris;48.875608199999995;2.3279219999999996
-Gaumont Opéra côté Capucines Cinema Paris;48.8711178;2.333878
-Gaumont Opéra côté Français Cinema Paris;48.8711178;2.333878
+Lucernaire Cinema Paris;48.844246999999996;2.330402
+MK2 Odéon côté Saint-Germain Cinema Paris;48.8524764;2.3382057999999994
+MK2 Odéon côté Saint-Michel Cinema Paris;48.85223349999999;2.3428479999999996
+MK2 Parnasse Cinema Paris;48.8428423;2.3306495999999997
+Nouvel Odéon Cinema Paris;48.8507943;2.3418255
+Sain André des arts I et II Cinema Paris;48.8533859;2.3420633
+UGC Danton Cinema Paris;48.8521149;2.338948
+UGC Montparnasse Cinema Paris;48.84352440000001;2.3258615000000002
 Cinémathèque francaise Cinema Paris;48.8372222;2.3825
 MK2 Nation Cinema Paris;48.848224900000005;2.3931389999999997
 UGC Ciné Cité Bercy Cinema Paris;48.8321456;2.3852367
@@ -86,6 +86,14 @@ Philarmonie de Paris Cinema Paris;48.8912963;2.3942959999999993
 Cité des sciences Cinema Paris;48.8955948;2.3878996
 CGR Paris-Lilas Cinema Paris;48.877576;2.409525
 MK2 Gambetta Cinema Paris;48.8647442;2.3996436
+Cinéma des cinéastes Cinema Paris;48.884322399999995;2.3268603999999997
+Mac Mahon Cinema Paris;48.8756001;2.2943517
+UGC Maillot Cinema Paris;48.8794513;2.2843361
+Pathé Wepler Cinema Paris;48.883975799999995;2.3279891
+Studio 28 Cinema Paris;48.8861424;2.3353859999999997
+MK2 Quai de Seine Cinema Paris;48.8851172;2.3716637
+MK2 Quai de Loire Cinema Paris;48.8843957;2.3724581
+Pathé la villette Cinema Paris;48.895907799999996;2.3886788
 UGC Gobelins Cinema Paris;48.8328755;2.3542043999999995
 7 Parnassiens Cinema Paris;48.84243980000001;2.3276391999999997
 Champin Denfert Cinema Paris;48.8338567;2.3309523999999997
@@ -94,11 +102,3 @@ Gaumont Alésia Cinema Paris;48.82814749999999;2.3277571999999997
 Gaumont Parnasse Cinema Paris;48.843108199999996;2.3243723
 Gaumont Parnasse côté Montparnos Cinema Paris;48.842125;2.3245706999999998
 Chaplin Saint Lambert Cinema Paris;48.843139699999995;2.2985618999999997
-Cinéma des cinéastes Cinema Paris;48.884322399999995;2.3268603999999997
-Mac Mahon Cinema Paris;48.8756001;2.2943517
-UGC Maillot Cinema Paris;48.8794513;2.2843361
-Pathé Wepler Cinema Paris;48.883975799999995;2.3279891
-Sutdio 28 Cinema Paris;48.8861424;2.3353859999999997
-MK2 Quai de Seine Cinema Paris;48.8851172;2.3716637
-MK2 Quai de Loire Cinema Paris;48.8843957;2.3724581
-Pathé la villette Cinema Paris;48.895907799999996;2.3886788
