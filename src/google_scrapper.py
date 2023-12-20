@@ -1,19 +1,20 @@
+from selenium.common.exceptions import NoSuchElementException
+import backoff
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 import urllib
 import requests
 import http.cookiejar as cookielib
-from requests_html import HTMLSession
-from typing import Any, Tuple, Dict, List, Generator, Tuple
+import time
+from typing import Any, Tuple, Dict, List, Tuple
 import json
-from pprint import pprint
-from utils.multithread import multithread_callable, chunks_input
 from pathlib import Path
 
 from utils.utils import put_cookies_in_jar
 
 GOOGLE_HOME = "https://www.google.fr/"
+SEARCH_PATH = "search"
 MAPS_PATH = "maps/search/"
 COOKIE_ANCHOR = "Tout refuser"  # WARNING: Dependant on browser language here French
 
@@ -28,8 +29,13 @@ class CoordinatesScrapper(object):
     IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC = 4
 
     # subject to Changes, double check
-    ANCHOR_FOR_MULTIPLE_RESULTS = "m6QErb DxyBCb kA9KIf dS8AEf ecceSd"
-    ANCHOR_ITEM_IN_RESULT_LIST = "hfpxzc"
+    ANCHOR_MAPS_FOR_MULTIPLE_RESULTS = "m6QErb DxyBCb kA9KIf dS8AEf ecceSd"
+    ANCHOR_MAPS_ITEM_IN_RESULT_LIST = "hfpxzc"
+
+    ANCHOR_SEARCH_FOR_IMG_RESULT_DIV = "isv-r PNCib ViTmJb BUooTd"
+    ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS = "sFlh5c pT0Scc iPVvYb"
+
+    SLEEP_BETWEEN_REQUESTS_SEC = 1
 
     def __init__(self, 
                  lang: str = "fr", 
@@ -49,7 +55,6 @@ class CoordinatesScrapper(object):
         )
         if cookies:
             for cookie in cookies:
-                print(cookie)
                 self.driver.add_cookie(cookie)
         self.lang = lang
 
@@ -99,40 +104,24 @@ class CoordinatesScrapper(object):
         """
         return urllib.parse.quote_plus(search_str)
 
-    def get_requests_response_content(self, url: str) -> requests.Response:
-        """
-        get the raw html from the request module, not using a driver
-        """
-        resp = requests.get(
-            url=url, params=None, data=None, headers=None, cookies=self.cookijar
-        )
-        if resp.status_code != 200:
-            print({resp.text})
-            print(f"FAIL: see response with status code {resp.status_code}")
-            resp.raise_for_status()
-        return resp
-
-    def get_requests_response_render_html(self, url: str) -> requests.Response:
-        """
-        render html for the given session
-        """
-        session = HTMLSession(mock_browser=True)
-        r = session.get(
-            url=url, params=None, data=None, headers=None, cookies=self.cookijar
-        )
-        r.html.render()
-        return r
-
-    def create_url_link(self, search_str: str) -> str:
+    def _create_url_link(self, search_str: str, type: str = "maps") -> str:
         """
         create a search url for google maps given a search string
         """
         params = {"authuser": "0", "entry": "ttu", "api": 1, "hl": self.lang}
-        params["query"] = CoordinatesScrapper.encode_search_str(search_str=search_str)
-        params["query"] = search_str
-        return GOOGLE_HOME + MAPS_PATH + f"?{urllib.parse.urlencode(params)}"
+        if type == "maps":
+            params["query"] = search_str
+            return GOOGLE_HOME + MAPS_PATH + f"?{urllib.parse.urlencode(params)}"
+        elif type == "images":
+            params.update({
+                "tbm": "isch",
+                "tbs": "isz:",
+                "q": CoordinatesScrapper.encode_search_str(search_str=search_str)
+                })
+            params["q"] = search_str
+            return GOOGLE_HOME + SEARCH_PATH + f"?{urllib.parse.urlencode(params)}"
 
-    def get_current_page_state(self):
+    def _maps_get_current_page_state(self) -> List[Any]:
         """
         get the script values that describe the state of the page, includes coordinates data
         """
@@ -143,7 +132,7 @@ class CoordinatesScrapper(object):
         result = json.loads(script_content)
         return result
 
-    def search_on(self, url_link: str) -> None:
+    def _search_on(self, url_link: str) -> None:
         """
         makes the driver go to the given url
         """
@@ -152,37 +141,91 @@ class CoordinatesScrapper(object):
             time_to_wait=self.IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC
         )
 
-    def go_to_first_result_from_multiple(self) -> None:
+    def _maps_go_to_first_result_from_multiple(self) -> None:
         """
         if google maps is uncertains, it returns a list of result
         this functions selects the first one (the best candidate ?) and makes the driver go to the result
         """
         top_result = self.driver.find_element(
-            By.CLASS_NAME, self.ANCHOR_ITEM_IN_RESULT_LIST
+            By.CLASS_NAME, self.ANCHOR_MAPS_ITEM_IN_RESULT_LIST
         )
         link = top_result.get_attribute("href")
-        self.search_on(link)
+        self._search_on(link)
 
-    def get_coordinates(self, search_str: str, take_first_on_multiple_res: bool = True) -> Tuple[float, float]:
+    def get_maps_coordinates(self, search_str: str, take_first_on_multiple_res: bool = True) -> Tuple[float, float]:
         """
         Retrieves coordinates given an search string,
         if Google Maps returns a list of result (i.e: it is uncertains about the result) the fcn
         will go to the first result from the list, considered to be the best candidate
         """
-        url_to_request = self.create_url_link(search_str=search_str)
-        self.search_on(url_link=url_to_request)
+        url_to_request = self._create_url_link(search_str=search_str, type="maps")
+        self._search_on(url_link=url_to_request)
         # Check if the query returned a single result or if Google returned a list of candidates
-        if (self.ANCHOR_FOR_MULTIPLE_RESULTS in self.current_page_source) and (
+        if (self.ANCHOR_MAPS_FOR_MULTIPLE_RESULTS in self.current_page_source) and (
             take_first_on_multiple_res == True
         ):
             print(
                 f"WARNING: Google returned multiples results on {search_str}, taking the first candidate"
             )
-            self.go_to_first_result_from_multiple()
+            self._maps_go_to_first_result_from_multiple()
 
-        page_state = self.get_current_page_state()
+        page_state = self._maps_get_current_page_state()
         long, lat = (safe_get(page_state, 0, 0, 1), safe_get(page_state, 0, 0, 2))
         return (lat, long)
+
+    def _slow_down(self) -> None:
+        self.SLEEP_BETWEEN_REQUESTS_SEC += 1
+        time.sleep(self.SLEEP_BETWEEN_REQUESTS_SEC)
+
+    @backoff.on_exception(
+        backoff.expo,
+        NoSuchElementException,
+        max_time=60,
+        max_tries=10,
+        on_backoff=lambda x: print(f"Retrying to get image on backoff see error: \n {x}"),
+    )
+    def _get_img_url_for_first_result(self, search_str: str) -> str:
+        url_to_request = self._create_url_link(search_str=search_str, type="images")
+        self._search_on(url_link=url_to_request)
+        first_result = self.driver.find_element(
+            by=By.XPATH, 
+            value=f"//div[contains(@class, '{self.ANCHOR_SEARCH_FOR_IMG_RESULT_DIV}')]"
+        )
+
+        first_result.click()
+
+        img_container_img_tag = self.driver.find_element(
+            by=By.XPATH,
+            value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS}')]"
+        )
+
+        url = img_container_img_tag.get_attribute("src")
+        return url
+
+    def get_img_for_search_string(self, search_str: str) -> bytes :
+        """
+        Retrieves the image bytes content for the given search string
+        The first result from google images is taken
+        """
+        try:
+            time.sleep(self.SLEEP_BETWEEN_REQUESTS_SEC)
+            url_img = self._get_img_url_for_first_result(search_str=search_str)
+        except NoSuchElementException as e:
+            print(f"Fail: see error {e}, retrying once after waiting 1min")
+            time.sleep(60)
+            url_img = self._get_img_url_for_first_result(search_str=search_str)
+        
+        content = requests.get(
+            url=url_img,
+            headers={"User-Agent": self.USER_AGENT},
+        )
+
+        if content.status_code != 200:
+            print({content.text})
+            print(f"FAIL: see response with status code {content.status_code}")
+            return None
+        
+        return content.content
 
 
 def safe_get(data: List[List[float | int]], *keys: int):
@@ -193,70 +236,3 @@ def safe_get(data: List[List[float | int]], *keys: int):
             return None
     return data
 
-
-def chunk_process_search(search_chunk: List[str]):
-    with CoordinatesScrapper() as scrapper:
-        scrapper.validate_google_cookies()
-        result = []
-        for s_ in search_chunk:
-            result.append(scrapper.get_coordinates(s_))
-
-        return result
-
-
-full_input = [
-    "Basilica, Monasterio de San Lorenzo, El Escorial",
-    "Villa dei Vescovi, Luvigliano di Torreglia",
-    "Église Saint-Étienne, Saint-Mihiel (Meuse)",
-    "Casino dell'Aurora, Palazzo Pallavicini, Rome",
-    "Duomo, Verona",
-    "Grimsby Dock Tower, Grimsby, North East Lincolnshire",
-    "Botanical Garden, Mechelen",
-    "Vatican Necropolis, Rome",
-    "San Giacomo degli Spagnoli, Naples",
-    "Villa Selvatico Emo Capodilista, Battaglia Terme",
-    "Church Treasury, Conques",
-    "Cathedral, Naumburg",
-    "Musée des Beaux-Arts, Blois",
-    "Villa Badoer, Fratta Polesine" "Piazza Navona, Rome",
-    "Yorkshire Museums, Middleton",
-    "Pinacoteca Comunale, Sansepolcro",
-    "Santa Prassede, Rome",
-    "Abegg-Stiftung, Bern",
-    "Boulevard Clovis 85-87, Brussels",
-    "Synagogue, Vienna",
-]
-
-
-if __name__ == "__main__":
-    NB_WORKERS = 4
-    import pprint
-
-    # Process results
-    chunks = [
-        {"input_list": chunk} for chunk in chunks_input(lst=full_input, n=NB_WORKERS)
-    ]
-
-    def process_chunk(input_list: List[str]) -> Dict[str, Tuple[str]]:
-        """
-        process a chunk of input
-        
-        Args:intput_list: list of input to process
-        Returns: dict with input as keys and coordinates as values
-        
-        """
-        with CoordinatesScrapper() as scraper_driver:
-            scraper_driver.validate_google_cookies()
-            result = {}
-            for search_ in input_list:
-                result[search_] = scraper_driver.get_coordinates(search_str=search_)
-            return result
-
-    full_result = multithread_callable(
-        func=process_chunk, kwargs_list=chunks, nb_workers=NB_WORKERS
-    )
-
-    result = {}
-    for d in full_result:
-        result.update(d)
-    pprint.pprint(result)
