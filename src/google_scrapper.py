@@ -2,6 +2,7 @@ from selenium.common.exceptions import NoSuchElementException
 import backoff
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.by import By
 import urllib
 import requests
@@ -10,7 +11,10 @@ import time
 from typing import Any, Tuple, Dict, List, Tuple
 import json
 from pathlib import Path
+import random
+import base64
 
+from src.driver_config import USER_AGENTS, PROXY_LIST
 from utils.utils import put_cookies_in_jar
 
 GOOGLE_HOME = "https://www.google.fr/"
@@ -24,7 +28,6 @@ class CoordinatesScrapper(object):
     Class to scrap google maps coordinates given an input string
     """
 
-    USER_AGENT = "education_illustration 0.1"
     BROWSER_PATH = f"{Path(__file__).parent}/driver/geckodriver"
     IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC = 4
 
@@ -33,22 +36,26 @@ class CoordinatesScrapper(object):
     ANCHOR_MAPS_ITEM_IN_RESULT_LIST = "hfpxzc"
 
     ANCHOR_SEARCH_FOR_IMG_RESULT_DIV = "isv-r PNCib ViTmJb BUooTd"
-    ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS = "sFlh5c pT0Scc iPVvYb"
 
-    SLEEP_BETWEEN_REQUESTS_SEC = 1
+    ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS = "sFlh5c pT0Scc iPVvYb"
+    ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS = "sFlh5c pT0Scc"
+
+    SLEEP_BETWEEN_REQUESTS_SEC = 3
 
     def __init__(self, 
                  lang: str = "fr", 
                  extra_options: List[str | Any] = None,
-                 cookies: List[Dict[str, str]] = None) -> None:
+                 cookies: List[Dict[str, str]] = None,
+                 use_proxy=True) -> None:
         # Setup Driver
         options = webdriver.FirefoxOptions()
-        options.add_argument(f"user-agent={self.USER_AGENT}")
+        options.add_argument(f"user-agent={random.choice(USER_AGENTS)}")
+
         for option in extra_options:
             options.add_argument(option)
         service = Service(executable_path=self.BROWSER_PATH)
         self.driver: webdriver.Firefox = webdriver.Firefox(
-            service=service, options=options
+            service=service, options=options,
         )
         self.driver.implicitly_wait(
             time_to_wait=self.IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC
@@ -57,6 +64,7 @@ class CoordinatesScrapper(object):
             for cookie in cookies:
                 self.driver.add_cookie(cookie)
         self.lang = lang
+
 
     def __enter__(self):
         return self
@@ -104,7 +112,9 @@ class CoordinatesScrapper(object):
         """
         return urllib.parse.quote_plus(search_str)
 
-    def _create_url_link(self, search_str: str, type: str = "maps") -> str:
+    def _create_url_link(self, 
+                         search_str: str, 
+                         type: str = "maps") -> str:
         """
         create a search url for google maps given a search string
         """
@@ -115,7 +125,6 @@ class CoordinatesScrapper(object):
         elif type == "images":
             params.update({
                 "tbm": "isch",
-                "tbs": "isz:",
                 "q": CoordinatesScrapper.encode_search_str(search_str=search_str)
                 })
             params["q"] = search_str
@@ -137,9 +146,6 @@ class CoordinatesScrapper(object):
         makes the driver go to the given url
         """
         self.driver.get(url=url_link)
-        self.driver.implicitly_wait(
-            time_to_wait=self.IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC
-        )
 
     def _maps_go_to_first_result_from_multiple(self) -> None:
         """
@@ -177,6 +183,9 @@ class CoordinatesScrapper(object):
         self.SLEEP_BETWEEN_REQUESTS_SEC += 1
         time.sleep(self.SLEEP_BETWEEN_REQUESTS_SEC)
 
+    def handle_failure(self) -> None:
+        pass
+
     @backoff.on_exception(
         backoff.expo,
         NoSuchElementException,
@@ -187,17 +196,23 @@ class CoordinatesScrapper(object):
     def _get_img_url_for_first_result(self, search_str: str) -> str:
         url_to_request = self._create_url_link(search_str=search_str, type="images")
         self._search_on(url_link=url_to_request)
+
         first_result = self.driver.find_element(
             by=By.XPATH, 
             value=f"//div[contains(@class, '{self.ANCHOR_SEARCH_FOR_IMG_RESULT_DIV}')]"
         )
-
         first_result.click()
 
-        img_container_img_tag = self.driver.find_element(
-            by=By.XPATH,
-            value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS}')]"
-        )
+        try:
+            img_container_img_tag = self.driver.find_element(
+                by=By.XPATH,
+                value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS}')]"
+            )
+        except NoSuchElementException:
+            img_container_img_tag = self.driver.find_element(
+                by=By.XPATH,
+                value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS}')]"
+            )
 
         url = img_container_img_tag.get_attribute("src")
         return url
@@ -215,17 +230,23 @@ class CoordinatesScrapper(object):
             time.sleep(60)
             url_img = self._get_img_url_for_first_result(search_str=search_str)
         
-        content = requests.get(
-            url=url_img,
-            headers={"User-Agent": self.USER_AGENT},
-        )
+        if "data:image" in url_img:
+            print(f"WARNING: image is base64 encoded for search string {search_str} returning raw value")
+            result = base64.b64decode(url_img.split("base64,")[1].encode("utf-8"))
+        else:
+            content = requests.get(
+                url=url_img,
+                headers={"User-Agent": random.choice(USER_AGENTS)},
+                verify=False
+            )
+            if content.status_code != 200:
+                print({content.text})
+                print(f"FAIL: see response with status code {content.status_code}")
+                return None
+            
+            result = content.content
 
-        if content.status_code != 200:
-            print({content.text})
-            print(f"FAIL: see response with status code {content.status_code}")
-            return None
-        
-        return content.content
+        return result
 
 
 def safe_get(data: List[List[float | int]], *keys: int):

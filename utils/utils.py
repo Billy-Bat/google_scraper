@@ -31,3 +31,14 @@ def put_cookies_in_jar(selenium_cookies, cookie_jar):
 def get_img_from_bytes(input_bytes: bytes) -> Image:
     return Image.open(BytesIO(input_bytes))
     
+def resize_img(img: Image, max_size: int = 810_000) -> Image:
+    """
+    resize an image given a max number of pixels in the img
+    """
+    if img.size[0]*img.size[1] > max_size:
+        ratio = max_size / (img.size[0]*img.size[1])
+        new_width = int(img.size[0] * ratio)
+        new_height = int(img.size[1] * ratio)
+        img = img.resize((new_width, new_height))
+
+    return img
