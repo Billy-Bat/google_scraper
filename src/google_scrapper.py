@@ -2,7 +2,6 @@ from selenium.common.exceptions import NoSuchElementException
 import backoff
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.by import By
 import urllib
 import requests
@@ -223,7 +222,6 @@ class CoordinatesScrapper(object):
         The first result from google images is taken
         """
         try:
-            time.sleep(self.SLEEP_BETWEEN_REQUESTS_SEC)
             url_img = self._get_img_url_for_first_result(search_str=search_str)
         except NoSuchElementException as e:
             print(f"Fail: see error {e}, retrying once after waiting 1min")
@@ -234,17 +232,20 @@ class CoordinatesScrapper(object):
             print(f"WARNING: image is base64 encoded for search string {search_str} returning raw value")
             result = base64.b64decode(url_img.split("base64,")[1].encode("utf-8"))
         else:
-            content = requests.get(
-                url=url_img,
-                headers={"User-Agent": random.choice(USER_AGENTS)},
-                verify=False
-            )
-            if content.status_code != 200:
-                print({content.text})
-                print(f"FAIL: see response with status code {content.status_code}")
+            try:
+                content = requests.get(
+                    url=url_img,
+                    headers={"User-Agent": random.choice(USER_AGENTS)}
+                )
+                result = content.content
+            except requests.exceptions.SSLError as e:
+                print(f"FAIL: SSLError, See: \n {e}")
                 return None
-            
-            result = content.content
+    
+            if content.status_code != 200:
+                    print({content.text})
+                    print(f"FAIL: see response with status code {content.status_code}")
+                    return None
 
         return result
 

@@ -20,7 +20,7 @@ if __name__ == """__main__""":
     for _, row in input_dataframe.iterrows():
         all_search_strings.append(f'{row["Nom"]} Theatre Paris')
 
-    input_chunks = list(chunks_input(all_search_strings, NB_WORKERS))[10:-1]
+    input_chunks = list(chunks_input(all_search_strings, NB_WORKERS))
 
     def process_chunk(chunk_search_str: List[str]) -> Dict[str, Tuple[str]]:
         chunk_result = {}
