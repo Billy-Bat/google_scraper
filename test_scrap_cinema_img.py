@@ -1,12 +1,12 @@
 from pathlib import Path
 import pandas as pd
-from src.google_scrapper import CoordinatesScrapper
+from google_scrapper.google_scrapper import CoordinatesScrapper
 from utils.multithread import multithread_callable, chunks_input
 from utils.utils import get_img_from_bytes
 from typing import List, Any, Dict, Tuple
 import pprint
 
-FirefoxOptions = [
+Options = [
     "-headless", # Remove if you debug
     "--log-level=0",
 ]
@@ -25,7 +25,7 @@ if __name__ == """__main__""":
 
     def process_chunk(chunk_search_str: List[str]) -> Dict[str, Tuple[str]]:
         chunk_result = {}
-        with CoordinatesScrapper(extra_options=FirefoxOptions) as scrapper:
+        with CoordinatesScrapper(extra_options=Options) as scrapper:
             scrapper.validate_google_cookies()
             for search_str in chunk_search_str:
                 try:

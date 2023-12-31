@@ -1,0 +1,38 @@
+USER_AGENTS = [
+ "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.3"
+,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.3"
+,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1.2 Safari/605.1.1"
+,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.3"
+,"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120."
+,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 OPR/105.0.0."
+,"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121."
+,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0."
+,"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115."
+,"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.3"
+,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.3"
+]
+
+# NOT USED
+# PROXY_LIST = [
+#     "104.45.128.122:80"
+#     ,"165.227.44.211:3128"
+#     ,"5.161.121.221:3128"
+#     ,"35.171.245.156:80"
+#     ,"5.161.212.254:3128"
+#     ,"5.161.180.12:3128"
+#     ,"66.225.254.16:80"
+#     ,"64.189.106.6:3129"
+#     ,"209.126.6.159:80"
+#     ,"34.134.91.130:3128"
+#     ,"75.89.101.62:80"
+#     ,"52.53.157.85:80"
+#     ,"153.92.214.224:80"
+#     ,"107.180.90.248:43138"
+#     ,"47.88.62.42:80"
+#     ,"23.162.200.51:3128"
+#     ,"143.42.163.193:80"
+#     ,"168.232.49.199:80"
+#     ,"204.102.40.250:12987"
+#     ,"51.38.191.151:80"
+#     ,"172.93.47.69:8888"
+# ]
