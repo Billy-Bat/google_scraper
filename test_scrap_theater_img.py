@@ -7,7 +7,7 @@ from utils.utils import get_img_from_bytes, resize_img
 import pprint
 
 Options = [
-    # "-headless", # Remove if you debug
+    "-headless", # Remove if you debug
     # "--log-level=3",
 ]
 
@@ -19,9 +19,9 @@ if __name__ == """__main__""":
     all_search_strings = []
     for _, row in input_dataframe.iterrows():
         all_search_strings.append(f'{row["Nom"]} Theatre Paris')
- 
+# 
     input_chunks = list(chunks_input(all_search_strings, NB_WORKERS))
- 
+# 
     def process_chunk(chunk_search_str: List[str]) -> Dict[str, Tuple[str]]:
         chunk_result = {}
         with CoordinatesScrapper(extra_options=Options) as scrapper:
