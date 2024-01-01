@@ -43,7 +43,6 @@ Issues = "https://github.com/Billy-Bat/google_scraper/issues"
 requires = ["setuptools>=68.2.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
-
 [tool.commitizen]
 update_changelog_on_bump = true
 version = "1.0.1"
