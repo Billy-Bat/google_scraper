@@ -1,9 +1,9 @@
 [project]
-name = "google_scrapper"
+name = "google_scraper"
 authors = [
     { name = "Billy Bat", email = "billybat2046@gmail.com"}
 ]
-description = "a simple package to handle scrapping google search result"
+description = "a simple package to handle scraping google search result"
 readme = "README.md"
 requires-python = ">=3.11.6"
 license = { file = "LICENSE" }
@@ -39,14 +39,13 @@ dependencies = [
 Homepage = "https://github.com/Billy-Bat/google-scrapper"
 Issues = "https://github.com/Billy-Bat/google-scrapper/issues"
 
-
 [build-system]
 requires = ["setuptools>=68.2.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["google_scrapper*"]
+include = ["google_scraper*"]
 
 
 [tool.commitizen]

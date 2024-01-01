@@ -1,9 +1,9 @@
 from pathlib import Path
 import pandas as pd
-from google_scrapper.scrapper import CoordinatesScrapper
-from google_scrapper.utils.multithread import multithread_callable, chunks_input
+from google_scraper.scrapper import CoordinatesScrapper
+from google_scraper.utils.multithread import multithread_callable, chunks_input
 from typing import List, Dict, Tuple
-from google_scrapper.utils.utils import get_img_from_bytes, resize_img
+from google_scraper.utils.utils import get_img_from_bytes, resize_img
 import pprint
 
 Options = [

@@ -11,7 +11,7 @@ import json
 import random
 import base64
 from .utils.utils import put_cookies_in_jar
-from google_scrapper.driver_config import USER_AGENTS
+from google_scraper.driver_config import USER_AGENTS
 
 GOOGLE_HOME = "https://www.google.fr/"
 SEARCH_PATH = "search"
