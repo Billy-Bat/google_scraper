@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import http.cookiejar as cookielib
 from PIL import Image
 from io import BytesIO

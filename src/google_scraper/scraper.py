@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 from selenium.common.exceptions import NoSuchElementException
 import backoff
 from selenium import webdriver

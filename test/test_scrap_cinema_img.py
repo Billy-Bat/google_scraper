@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 from pathlib import Path
 import pandas as pd
 from google_scraper.scraper import CoordinatesScraper

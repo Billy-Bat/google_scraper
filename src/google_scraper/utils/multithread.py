@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 from typing import Callable, Dict, List, Any, Generator
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from time import perf_counter
