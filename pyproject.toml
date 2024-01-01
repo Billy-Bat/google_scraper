@@ -8,7 +8,7 @@ readme = "README.md"
 requires-python = ">=3.11.6"
 license = { file = "LICENSE" }
 keywords = ["google", "scrapper", "search"]
-dynamic = ["version"]
+version = "0.0.1"
 dependencies = [
     "attrs>=23.2.0",
     "backoff>=2.2.1",
@@ -48,11 +48,6 @@ build-backend = "setuptools.build_meta"
 where = ["."]
 include = ["google_scrapper*"]
 
-[tool.setuptools.dynamic]
-version = {attr = "google_scrapper.__version__"}
 
 [tool.commitizen]
 update_changelog_on_bump = true
-version_files = [
-    "google_scrapper/__init__.py.__version__"
-]
