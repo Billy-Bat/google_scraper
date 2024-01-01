@@ -51,3 +51,7 @@ include = ["google_scrapper*"]
 
 [tool.commitizen]
 update_changelog_on_bump = true
+version = "1.0.0"
+version_files = ["pyproject.toml:version"]
+tag_format = "v$version"
+bump_message = "build: release $current_version → $new_version"
