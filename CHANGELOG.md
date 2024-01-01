@@ -7,6 +7,7 @@
 
 ### Fix
 
+- adding the necessary infos for tools.setuptools.packages.find
 - **pyproject.toml**: typo fix
 - retro-add features for base64-encoded images and fallback result
 - google_scrapper.py, use selenium manager for driver and browser version compatibility handling
