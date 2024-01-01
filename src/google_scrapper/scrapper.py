@@ -1,17 +1,16 @@
 from selenium.common.exceptions import NoSuchElementException
 import backoff
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 import urllib
 import requests
 import http.cookiejar as cookielib
 import time
-from typing import Any, Tuple, Dict, List, Tuple
+from typing import Any, Tuple, Dict, List
 import json
 import random
 import base64
-from utils.utils import put_cookies_in_jar
+from .utils.utils import put_cookies_in_jar
 from google_scrapper.driver_config import USER_AGENTS
 
 GOOGLE_HOME = "https://www.google.fr/"
@@ -38,10 +37,12 @@ class CoordinatesScrapper(object):
 
     SLEEP_BETWEEN_REQUESTS_SEC = 3
 
-    def __init__(self, 
-                 lang: str = "fr", 
-                 extra_options: List[str | Any] = None,
-                 cookies: List[Dict[str, str]] = None) -> None:
+    def __init__(
+        self,
+        lang: str = "fr",
+        extra_options: List[str | Any] = None,
+        cookies: List[Dict[str, str]] = None,
+    ) -> None:
         # Setup Driver
         options = webdriver.FirefoxOptions()
         options.add_argument(f"user-agent={random.choice(USER_AGENTS)}")
@@ -49,7 +50,8 @@ class CoordinatesScrapper(object):
         for option in extra_options:
             options.add_argument(option)
         self.driver: webdriver.Firefox = webdriver.Firefox(
-            service=None, options=options,
+            service=None,
+            options=options,
         )
         self.driver.implicitly_wait(
             time_to_wait=self.IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC
@@ -58,7 +60,6 @@ class CoordinatesScrapper(object):
             for cookie in cookies:
                 self.driver.add_cookie(cookie)
         self.lang = lang
-
 
     def __enter__(self):
         return self
@@ -106,9 +107,7 @@ class CoordinatesScrapper(object):
         """
         return urllib.parse.quote_plus(search_str)
 
-    def _create_url_link(self, 
-                         search_str: str, 
-                         type: str = "maps") -> str:
+    def _create_url_link(self, search_str: str, type: str = "maps") -> str:
         """
         create a search url for google maps given a search string
         """
@@ -117,10 +116,12 @@ class CoordinatesScrapper(object):
             params["query"] = search_str
             return GOOGLE_HOME + MAPS_PATH + f"?{urllib.parse.urlencode(params)}"
         elif type == "images":
-            params.update({
-                "tbm": "isch",
-                "q": CoordinatesScrapper.encode_search_str(search_str=search_str)
-                })
+            params.update(
+                {
+                    "tbm": "isch",
+                    "q": CoordinatesScrapper.encode_search_str(search_str=search_str),
+                }
+            )
             params["q"] = search_str
             return GOOGLE_HOME + SEARCH_PATH + f"?{urllib.parse.urlencode(params)}"
 
@@ -152,7 +153,9 @@ class CoordinatesScrapper(object):
         link = top_result.get_attribute("href")
         self._search_on(link)
 
-    def get_maps_coordinates(self, search_str: str, take_first_on_multiple_res: bool = True) -> Tuple[float, float]:
+    def get_maps_coordinates(
+        self, search_str: str, take_first_on_multiple_res: bool = True
+    ) -> Tuple[float, float]:
         """
         Retrieves coordinates given an search string,
         if Google Maps returns a list of result (i.e: it is uncertains about the result) the fcn
@@ -162,7 +165,7 @@ class CoordinatesScrapper(object):
         self._search_on(url_link=url_to_request)
         # Check if the query returned a single result or if Google returned a list of candidates
         if (self.ANCHOR_MAPS_FOR_MULTIPLE_RESULTS in self.current_page_source) and (
-            take_first_on_multiple_res == True
+            take_first_on_multiple_res is True
         ):
             print(
                 f"WARNING: Google returned multiples results on {search_str}, taking the first candidate"
@@ -185,33 +188,35 @@ class CoordinatesScrapper(object):
         NoSuchElementException,
         max_time=60,
         max_tries=10,
-        on_backoff=lambda x: print(f"Retrying to get image on backoff see error: \n {x}"),
+        on_backoff=lambda x: print(
+            f"Retrying to get image on backoff see error: \n {x}"
+        ),
     )
     def _get_img_url_for_first_result(self, search_str: str) -> str:
         url_to_request = self._create_url_link(search_str=search_str, type="images")
         self._search_on(url_link=url_to_request)
 
         first_result = self.driver.find_element(
-            by=By.XPATH, 
-            value=f"//div[contains(@class, '{self.ANCHOR_SEARCH_FOR_IMG_RESULT_DIV}')]"
+            by=By.XPATH,
+            value=f"//div[contains(@class, '{self.ANCHOR_SEARCH_FOR_IMG_RESULT_DIV}')]",
         )
         first_result.click()
 
         try:
             img_container_img_tag = self.driver.find_element(
                 by=By.XPATH,
-                value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS}')]"
+                value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS}')]",
             )
         except NoSuchElementException:
             img_container_img_tag = self.driver.find_element(
                 by=By.XPATH,
-                value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS}')]"
+                value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS}')]",
             )
 
         url = img_container_img_tag.get_attribute("src")
         return url
 
-    def get_img_for_search_string(self, search_str: str) -> bytes :
+    def get_img_for_search_string(self, search_str: str) -> bytes:
         """
         Retrieves the image bytes content for the given search string
         The first result from google images is taken
@@ -222,25 +227,26 @@ class CoordinatesScrapper(object):
             print(f"Fail: see error {e}, retrying once after waiting 1min")
             time.sleep(60)
             url_img = self._get_img_url_for_first_result(search_str=search_str)
-        
+
         if "data:image" in url_img:
-            print(f"WARNING: image is base64 encoded for search string {search_str} returning raw value")
+            print(
+                f"WARNING: image is base64 encoded for search string {search_str} returning raw value"
+            )
             result = base64.b64decode(url_img.split("base64,")[1].encode("utf-8"))
         else:
             try:
                 content = requests.get(
-                    url=url_img,
-                    headers={"User-Agent": random.choice(USER_AGENTS)}
+                    url=url_img, headers={"User-Agent": random.choice(USER_AGENTS)}
                 )
                 result = content.content
             except requests.exceptions.SSLError as e:
                 print(f"FAIL: SSLError, See: \n {e}")
                 return None
-    
+
             if content.status_code != 200:
-                    print({content.text})
-                    print(f"FAIL: see response with status code {content.status_code}")
-                    return None
+                print({content.text})
+                print(f"FAIL: see response with status code {content.status_code}")
+                return None
 
         return result
 

@@ -1,18 +1,17 @@
 from pathlib import Path
 import pandas as pd
-from google_scrapper.google_scrapper import CoordinatesScrapper
-from utils.multithread import multithread_callable, chunks_input
-from typing import List, Any, Dict, Tuple
+from google_scrapper.scrapper import CoordinatesScrapper
+from google_scrapper.utils.multithread import multithread_callable, chunks_input
+from typing import List, Dict, Tuple
 import pprint
 
 Options = [
-    "-headless", # Remove if you debug
+    "-headless",  # Remove if you debug
     "--log-level=0",
 ]
 
 NB_WORKERS = 8
 CURRENT_FOLDER = str(Path(__file__).parent)
-
 
 
 if __name__ == """__main__""":
@@ -28,13 +27,15 @@ if __name__ == """__main__""":
         with CoordinatesScrapper(extra_options=Options) as scrapper:
             scrapper.validate_google_cookies()
             for search_str in chunk_search_str:
-                chunk_result[search_str] = scrapper.get_maps_coordinates(search_str=search_str)
+                chunk_result[search_str] = scrapper.get_maps_coordinates(
+                    search_str=search_str
+                )
         return chunk_result
-     
+
     pprint.pprint(input_chunks)
     full_result: List[Dict[str, Tuple[float, float]]] = multithread_callable(
-        func = process_chunk,
-        kwargs_list = [{"chunk_search_str": chunk} for chunk in input_chunks],
+        func=process_chunk,
+        kwargs_list=[{"chunk_search_str": chunk} for chunk in input_chunks],
         nb_workers=NB_WORKERS,
     )
 
@@ -49,7 +50,5 @@ if __name__ == """__main__""":
         quotechar='"',
         index=True,
         index_label="name",
-        header=["lat", "long"]
+        header=["lat", "long"],
     )
-        
-        

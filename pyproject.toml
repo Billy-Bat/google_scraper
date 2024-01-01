@@ -1,0 +1,48 @@
+[project]
+name = "google_scrapper"
+authors = [
+    { name = "Billy Bat", email = "billybat2046@gmail.com"}
+]
+description = "a simple package to handle scrapping google search result"
+readme = "README.md"
+requires-python = ">=3.11.6"
+license = { file = "LICENSE" }
+keywords = ["google", "scrapper", "search"]
+dynamic = ["version"]
+dependencies = [
+    "attrs>=23.2.0",
+    "backoff>=2.2.1",
+    "certifi>=2023.11.17",
+    "charset-normalizer>=3.3.2",
+    "h11>=0.14.0",
+    "idna>=3.6",
+    "numpy>=1.26.2",
+    "outcome>=1.3.0.post0",
+    "pandas>=2.1.4",
+    "Pillow>=10.1.0",
+    "PySocks>=1.7.1",
+    "python-dateutil>=2.8.2",
+    "pytz>=2023.3.post1",
+    "requests>=2.31.0",
+    "selenium>=4.16.0",
+    "six>=1.16.0",
+    "sniffio>=1.3.0",
+    "sortedcontainers>=2.4.0",
+    "trio>=0.23.2",
+    "trio-websocket>=0.11.1",
+    "tzdata>=2023.4",
+    "urllib3>=2.1.0",
+    "wsproto>=1.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Billy-Bat/google-scrapper"
+Issues = "https://github.com/Billy-Bat/google-scrapper/issues"
+
+
+[build-system]
+requires = ["setuptools>=68.2.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.commitizen]
+updat_changelog_on_bump = true
