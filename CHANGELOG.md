@@ -1,3 +1,12 @@
+## v1.0.1 (2024-01-01)
+
+### Fix
+
+- **all**: adding encoding and file type at the tope
+- **pyproject.toml**: removing uncessary args
+- **changing-package-naming**: package naming error throughout
+- **pyproject.toml**: fix version in commitizen
+
 ## v1.0.0 (2024-01-01)
 
 ### Fix
