@@ -54,5 +54,5 @@ version = {attr = "google_scrapper.__version__"}
 [tool.commitizen]
 update_changelog_on_bump = true
 version_files = [
-    "pyproject.toml:version"
+    "google_scrapper/__init__.py.__version__"
 ]

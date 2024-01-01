@@ -7,6 +7,7 @@
 
 ### Fix
 
+- **pyproject.toml**: tool.commitizen
 - adding the necessary infos for tools.setuptools.packages.find
 - **pyproject.toml**: typo fix
 - retro-add features for base64-encoded images and fallback result
