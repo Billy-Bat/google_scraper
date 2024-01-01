@@ -1,6 +1,6 @@
 from pathlib import Path
 import pandas as pd
-from google_scraper.scraper import CoordinatesScrapper
+from google_scraper.scraper import CoordinatesScraper
 from google_scraper.utils.multithread import multithread_callable, chunks_input
 from typing import List, Dict, Tuple
 from google_scraper.utils.utils import get_img_from_bytes, resize_img
@@ -25,7 +25,7 @@ if __name__ == """__main__""":
     #
     def process_chunk(chunk_search_str: List[str]) -> Dict[str, Tuple[str]]:
         chunk_result = {}
-        with CoordinatesScrapper(extra_options=Options) as scrapper:
+        with CoordinatesScraper(extra_options=Options) as scrapper:
             scrapper.validate_google_cookies()
             for search_str in chunk_search_str:
                 chunk_result[search_str] = scrapper.get_img_for_search_string(

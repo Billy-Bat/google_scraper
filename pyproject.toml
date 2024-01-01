@@ -7,7 +7,7 @@ description = "a simple package to handle scraping google search result"
 readme = "README.md"
 requires-python = ">=3.11.6"
 license = { file = "LICENSE" }
-keywords = ["google", "scrapper", "search"]
+keywords = ["google", "scraper", "search"]
 version = "1.0.0"
 dependencies = [
     "attrs>=23.2.0",
@@ -36,16 +36,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Billy-Bat/google-scrapper"
-Issues = "https://github.com/Billy-Bat/google-scrapper/issues"
+Homepage = "https://github.com/Billy-Bat/google_scraper"
+Issues = "https://github.com/Billy-Bat/google_scraper/issues"
 
 [build-system]
 requires = ["setuptools>=68.2.2"]
 build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["google_scraper*"]
 
 
 [tool.commitizen]
