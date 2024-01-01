@@ -44,5 +44,8 @@ Issues = "https://github.com/Billy-Bat/google-scrapper/issues"
 requires = ["setuptools>=68.2.2"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.dynamic]
+version = {attr = "google_scrapper.__version__"}
+
 [tool.commitizen]
 update_changelog_on_bump = true
