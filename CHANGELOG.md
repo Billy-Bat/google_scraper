@@ -1,5 +1,11 @@
 ## v1.0.0 (2024-01-01)
 
+### Fix
+
+- **pyproject.toml**: fix version in commitizen
+
+## v1.0.0 (2024-01-01)
+
 ### Feat
 
 - **google_scrapper.py**: ability to handle data in base 64 as direct output
