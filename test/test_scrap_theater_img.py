@@ -28,10 +28,10 @@ if __name__ == """__main__""":
     #
     def process_chunk(chunk_search_str: List[str]) -> Dict[str, Tuple[str]]:
         chunk_result = {}
-        with CoordinatesScraper(extra_options=Options) as scrapper:
-            scrapper.validate_google_cookies()
+        with CoordinatesScraper(extra_options=Options) as scraper:
+            scraper.validate_google_cookies()
             for search_str in chunk_search_str:
-                chunk_result[search_str] = scrapper.get_img_for_search_string(
+                chunk_result[search_str] = scraper.get_img_for_search_string(
                     search_str=search_str
                 )
 
