@@ -1,6 +1,6 @@
 from pathlib import Path
 import pandas as pd
-from google_scraper.scrapper import CoordinatesScrapper
+from google_scraper.scraper import CoordinatesScrapper
 from google_scraper.utils.multithread import multithread_callable, chunks_input
 from typing import List, Dict, Tuple
 import pprint
