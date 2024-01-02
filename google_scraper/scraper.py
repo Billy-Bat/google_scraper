@@ -22,7 +22,7 @@ MAPS_PATH = "maps/search/"
 COOKIE_ANCHOR = "Tout refuser"  # WARNING: Dependant on browser language here French
 
 
-class CoordinatesScraper(object):
+class GoogleScraper(object):
     """
     Class to scrap google maps coordinates given an input string
     """
@@ -43,7 +43,7 @@ class CoordinatesScraper(object):
     def __init__(
         self,
         lang: str = "fr",
-        extra_options: List[str | Any] = None,
+        extra_options: List[str | Any] = [],
         cookies: List[Dict[str, str]] = None,
     ) -> None:
         # Setup Driver
@@ -122,7 +122,7 @@ class CoordinatesScraper(object):
             params.update(
                 {
                     "tbm": "isch",
-                    "q": CoordinatesScraper.encode_search_str(search_str=search_str),
+                    "q": GoogleScraper.encode_search_str(search_str=search_str),
                 }
             )
             params["q"] = search_str

@@ -3,14 +3,14 @@
 
 from pathlib import Path
 import pandas as pd
-from google_scraper.scraper import CoordinatesScraper
+from google_scraper.scraper import GoogleScraper
 from google_scraper.utils.multithread import multithread_callable, chunks_input
 from google_scraper.utils.utils import get_img_from_bytes
 from typing import List, Dict, Tuple
 import pprint
 
 Options = [
-    "-headless",  # Remove if you debug
+    # "-headless",  # Remove if you debug
     "--log-level=0",
 ]
 
@@ -28,7 +28,7 @@ if __name__ == """__main__""":
 
     def process_chunk(chunk_search_str: List[str]) -> Dict[str, Tuple[str]]:
         chunk_result = {}
-        with CoordinatesScraper(extra_options=Options) as scraper:
+        with GoogleScraper(extra_options=Options) as scraper:
             scraper.validate_google_cookies()
             for search_str in chunk_search_str:
                 try:
@@ -43,7 +43,7 @@ if __name__ == """__main__""":
     # You might get throttled !
     full_result: List[Dict[str, Tuple[float, float]]] = multithread_callable(
         func=process_chunk,
-        kwargs_list=[{"chunk_search_str": chunk} for chunk in input_chunks[0:2]],
+        kwargs_list=[{"chunk_search_str": chunk} for chunk in input_chunks[0:10]],
         nb_workers=NB_WORKERS,
     )
 
