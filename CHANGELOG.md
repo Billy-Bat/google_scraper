@@ -1,3 +1,11 @@
+## v1.0.2 (2024-01-02)
+
+### Fix
+
+- **changing-class-name**: changing class name
+- **pyproject.toml**: changing a few things
+- **structure**: chaging structure removing /src
+
 ## v1.0.1 (2024-01-01)
 
 ### Fix

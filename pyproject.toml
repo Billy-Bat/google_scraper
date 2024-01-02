@@ -8,7 +8,7 @@ readme = "README.md"
 requires-python = ">=3.11.6"
 license = { file = "LICENSE" }
 keywords = ["google", "scraper", "search"]
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
     "attrs>=23.2.0",
     "backoff>=2.2.1",
@@ -45,7 +45,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.commitizen]
 update_changelog_on_bump = true
-version = "1.0.1"
+version = "1.0.2"
 version_files = ["pyproject.toml:version"]
 tag_format = "v$version"
 bump_message = "build: release $current_version → $new_version"
