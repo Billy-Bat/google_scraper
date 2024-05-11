@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.remote.webelement import WebElement
 import backoff
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,7 +10,7 @@ import urllib
 import requests
 import http.cookiejar as cookielib
 import time
-from typing import Any, Tuple, Dict, List
+from typing import Any, Tuple, Dict, List, Optional
 import json
 import random
 import base64
@@ -30,15 +31,13 @@ class GoogleScraper(object):
     IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC = 4
 
     # subject to Changes, double check
-    ANCHOR_MAPS_FOR_MULTIPLE_RESULTS = "m6QErb DxyBCb kA9KIf dS8AEf ecceSd"
-    ANCHOR_MAPS_ITEM_IN_RESULT_LIST = "hfpxzc"
+    ANCHOR_MAPS_FOR_MULTIPLE_RESULTS = ["m6QErb DxyBCb kA9KIf dS8AEf ecceSd", ]
+    ANCHOR_MAPS_ITEM_IN_RESULT_LIST = ["hfpxzc", ]
 
-    ANCHOR_SEARCH_FOR_IMG_RESULT_DIV = "isv-r PNCib ViTmJb BUooTd"
+    ANCHOR_SEARCH_FOR_IMG_RESULT_DIV = ["isv-r PNCib ViTmJb BUooTd", "czzyk XOEbc"]
 
-    ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS = "sFlh5c pT0Scc iPVvYb"
-    ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS = "sFlh5c pT0Scc"
-
-    ANCHOR_DIRECTION_ADDRESS_SCRIPT = "sb_ifc51" # Hiddent script div that contains input with address
+    ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS = ["sFlh5c pT0Scc iPVvYb", ]
+    ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS = ["sFlh5c pT0Scc", ]
 
     SLEEP_BETWEEN_REQUESTS_SEC = 3
 
@@ -152,9 +151,7 @@ class GoogleScraper(object):
         if google maps is uncertains, it returns a list of result
         this functions selects the first one (the best candidate ?) and makes the driver go to the result
         """
-        top_result = self.driver.find_element(
-            By.CLASS_NAME, self.ANCHOR_MAPS_ITEM_IN_RESULT_LIST
-        )
+        top_result = self._get_element_by_class_names(class_names=self.ANCHOR_MAPS_ITEM_IN_RESULT_LIST, tag_type="*")
         link = top_result.get_attribute("href")
         self._search_on(link)
 
@@ -166,11 +163,22 @@ class GoogleScraper(object):
 
         url_to_request = self._create_url_link(search_str=search_str, type="maps")
         self._search_on(url_link=url_to_request)
-        if self.ANCHOR_MAPS_FOR_MULTIPLE_RESULTS in self.current_page_source:
+        if self.ANCHOR_MAPS_FOR_MULTIPLE_RESULTS[0] in self.current_page_source:
             print(
                 f"WARNING: Google returned multiples results on {search_str}, taking the first candidate"
             )
             self._maps_go_to_first_result_from_multiple()
+
+    def _get_element_by_class_names(self, class_names: List[str], tag_type="div") -> WebElement:
+        for class_name in class_names:
+            try:
+                return self.driver.find_element(
+                    by=By.XPATH,
+                    value=f"//{tag_type}[contains(@class, '{class_name}')]",
+                )
+            except NoSuchElementException as e:
+                continue
+        raise NoSuchElementException(f"Could not find element with class names {class_names}")
 
     def get_maps_coordinates(
         self, search_str: str, take_first_on_multiple_res: bool = True
@@ -215,22 +223,13 @@ class GoogleScraper(object):
         url_to_request = self._create_url_link(search_str=search_str, type="images")
         self._search_on(url_link=url_to_request)
 
-        first_result = self.driver.find_element(
-            by=By.XPATH,
-            value=f"//div[contains(@class, '{self.ANCHOR_SEARCH_FOR_IMG_RESULT_DIV}')]",
-        )
+        first_result = self._get_element_by_class_names(class_names=self.ANCHOR_SEARCH_FOR_IMG_RESULT_DIV, tag_type="div")
         first_result.click()
 
-        try:
-            img_container_img_tag = self.driver.find_element(
-                by=By.XPATH,
-                value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS}')]",
-            )
-        except NoSuchElementException:
-            img_container_img_tag = self.driver.find_element(
-                by=By.XPATH,
-                value=f"//img[contains(@class, '{self.ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS}')]",
-            )
+        img_container_img_tag = self._get_element_by_class_names(
+            class_names=[self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS, self.ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS],
+            tag_type="img"
+        )
 
         url = img_container_img_tag.get_attribute("src")
         return url
