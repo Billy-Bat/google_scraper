@@ -34,7 +34,6 @@ if __name__ == """__main__""":
                     search_str=search_str
                 )
                 address = scraper.get_maps_address(search_str=search_str)
-                print(address)
                 raise ValueError("Stop")
         return chunk_result
 
