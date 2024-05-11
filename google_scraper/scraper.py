@@ -36,8 +36,7 @@ class GoogleScraper(object):
 
     ANCHOR_SEARCH_FOR_IMG_RESULT_DIV = ["isv-r PNCib ViTmJb BUooTd", "czzyk XOEbc"]
 
-    ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS = ["sFlh5c pT0Scc iPVvYb", ]
-    ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS = ["sFlh5c pT0Scc", ]
+    ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS = ["sFlh5c pT0Scc iPVvYb", "sFlh5c pT0Scc"] # First one is external url, other is base64
 
     SLEEP_BETWEEN_REQUESTS_SEC = 3
 
@@ -227,7 +226,7 @@ class GoogleScraper(object):
         first_result.click()
 
         img_container_img_tag = self._get_element_by_class_names(
-            class_names=[self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS, self.ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS],
+            class_names=self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS
             tag_type="img"
         )
 
