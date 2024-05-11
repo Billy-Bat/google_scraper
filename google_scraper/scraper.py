@@ -58,7 +58,6 @@ class GoogleScraper(object):
         self.driver: webdriver.Firefox = webdriver.Firefox(
             service=service,
             options=options,
-            executable_path=executable_path,
         )
         self.driver.implicitly_wait(
             time_to_wait=self.IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC
