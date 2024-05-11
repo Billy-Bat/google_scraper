@@ -6,6 +6,7 @@ from selenium.webdriver.remote.webelement import WebElement
 import backoff
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
 import urllib
 import requests
 import http.cookiejar as cookielib
@@ -50,11 +51,12 @@ class GoogleScraper(object):
         # Setup Driver
         options = webdriver.FirefoxOptions()
         options.add_argument(f"user-agent={random.choice(USER_AGENTS)}")
-
+        service = Service(executable_path=executable_path) if executable_path else Service()
+        
         for option in extra_options:
             options.add_argument(option)
         self.driver: webdriver.Firefox = webdriver.Firefox(
-            service=None,
+            service=service,
             options=options,
             executable_path=executable_path,
         )
