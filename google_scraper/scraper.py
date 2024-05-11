@@ -226,7 +226,7 @@ class GoogleScraper(object):
         first_result.click()
 
         img_container_img_tag = self._get_element_by_class_names(
-            class_names=self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS
+            class_names=self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS,
             tag_type="img"
         )
 
