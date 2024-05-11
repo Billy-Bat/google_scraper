@@ -45,6 +45,7 @@ class GoogleScraper(object):
         lang: str = "fr",
         extra_options: List[str | Any] = [],
         cookies: List[Dict[str, str]] = None,
+        executable_path: Optional[str] = None,
     ) -> None:
         # Setup Driver
         options = webdriver.FirefoxOptions()
@@ -55,6 +56,7 @@ class GoogleScraper(object):
         self.driver: webdriver.Firefox = webdriver.Firefox(
             service=None,
             options=options,
+            executable_path=executable_path,
         )
         self.driver.implicitly_wait(
             time_to_wait=self.IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC
