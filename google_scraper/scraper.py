@@ -45,7 +45,7 @@ class GoogleScraper(object):
         lang: str = "fr",
         extra_options: List[str | Any] = [],
         cookies: List[Dict[str, str]] = None,
-        executable_path: Optional[str] = "/Users/guyguy/Downloads/geckodriver",
+        executable_path: Optional[str] = None,
     ) -> None:
         # Setup Driver
         options = webdriver.FirefoxOptions()
