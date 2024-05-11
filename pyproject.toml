@@ -5,7 +5,7 @@ authors = [
 ]
 description = "a simple package to handle scraping google search result"
 readme = "README.md"
-requires-python = ">=3.11.6"
+requires-python = ">=3.11.2"
 license = { file = "LICENSE" }
 keywords = ["google", "scraper", "search"]
 version = "1.0.2"
