@@ -33,6 +33,9 @@ if __name__ == """__main__""":
                 chunk_result[search_str] = scraper.get_maps_coordinates(
                     search_str=search_str
                 )
+                address = scraper.get_maps_address(search_str=search_str)
+                print(address)
+                raise ValueError("Stop")
         return chunk_result
 
     pprint.pprint(input_chunks)

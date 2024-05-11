@@ -38,6 +38,8 @@ class GoogleScraper(object):
     ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS = "sFlh5c pT0Scc iPVvYb"
     ANCHOR_SIDE_BAR_IMG_IMG_TAG_CLASS = "sFlh5c pT0Scc"
 
+    ANCHOR_DIRECTION_ADDRESS_SCRIPT = "sb_ifc51" # Hiddent script div that contains input with address
+
     SLEEP_BETWEEN_REQUESTS_SEC = 3
 
     def __init__(
@@ -156,6 +158,20 @@ class GoogleScraper(object):
         link = top_result.get_attribute("href")
         self._search_on(link)
 
+    def _get_maps_result(self, search_str: str) -> None:
+        """
+        Redirects the driver to the google maps search result.
+        If multiple results for a search string, the driver will go to the first one
+        """
+
+        url_to_request = self._create_url_link(search_str=search_str, type="maps")
+        self._search_on(url_link=url_to_request)
+        if self.ANCHOR_MAPS_FOR_MULTIPLE_RESULTS in self.current_page_source:
+            print(
+                f"WARNING: Google returned multiples results on {search_str}, taking the first candidate"
+            )
+            self._maps_go_to_first_result_from_multiple()
+
     def get_maps_coordinates(
         self, search_str: str, take_first_on_multiple_res: bool = True
     ) -> Tuple[float, float]:
@@ -164,20 +180,20 @@ class GoogleScraper(object):
         if Google Maps returns a list of result (i.e: it is uncertains about the result) the fcn
         will go to the first result from the list, considered to be the best candidate
         """
-        url_to_request = self._create_url_link(search_str=search_str, type="maps")
-        self._search_on(url_link=url_to_request)
-        # Check if the query returned a single result or if Google returned a list of candidates
-        if (self.ANCHOR_MAPS_FOR_MULTIPLE_RESULTS in self.current_page_source) and (
-            take_first_on_multiple_res is True
-        ):
-            print(
-                f"WARNING: Google returned multiples results on {search_str}, taking the first candidate"
-            )
-            self._maps_go_to_first_result_from_multiple()
+        self._get_maps_result(search_str=search_str)
 
         page_state = self._maps_get_current_page_state()
         long, lat = (safe_get(page_state, 0, 0, 1), safe_get(page_state, 0, 0, 2))
         return (lat, long)
+
+    def get_maps_address(self, search_str: str) -> str:
+        """
+        Retrieves the address given a search string
+        """
+        self._get_maps_result(search_str=search_str)
+        return self.driver.find_element(
+            By.XPATH, '//button[@data-item-id="address"]'
+        ).get_attribute("aria-label").replace("Adresse: ", "")
 
     def _slow_down(self) -> None:
         self.SLEEP_BETWEEN_REQUESTS_SEC += 1
