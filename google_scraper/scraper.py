@@ -1,20 +1,24 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.remote.webelement import WebElement
-import backoff
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
-import urllib
-import requests
-import http.cookiejar as cookielib
-import time
-from typing import Any, Tuple, Dict, List, Optional
+import bs4
 import json
+import time
+import urllib
 import random
 import base64
+import backoff
+import requests
+import http.cookiejar as cookielib
+
+from typing import Any, Tuple, Dict, List, Optional
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.remote.webelement import WebElement
+from typing import Any, Tuple, Dict, List, Optional
+
 from .utils.utils import put_cookies_in_jar
 from google_scraper.driver_config import USER_AGENTS
 
@@ -32,12 +36,21 @@ class GoogleScraper(object):
     IMPLICIT_WAIT_BEFORE_NO_SUCH_ELEMENT_SEC = 4
 
     # subject to Changes, double check
-    ANCHOR_MAPS_FOR_MULTIPLE_RESULTS = ["m6QErb DxyBCb kA9KIf dS8AEf ecceSd", ]
-    ANCHOR_MAPS_ITEM_IN_RESULT_LIST = ["hfpxzc", ]
+    ANCHOR_MAPS_FOR_MULTIPLE_RESULTS = [
+        "m6QErb DxyBCb kA9KIf dS8AEf ecceSd",
+    ]
+    ANCHOR_MAPS_ITEM_IN_RESULT_LIST = [
+        "hfpxzc",
+    ]
 
     ANCHOR_SEARCH_FOR_IMG_RESULT_DIV = ["isv-r PNCib ViTmJb BUooTd", "czzyk XOEbc"]
 
-    ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS = ["sFlh5c pT0Scc iPVvYb", "sFlh5c pT0Scc"] # First one is external url, other is base64
+    ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS = [
+        "sFlh5c pT0Scc iPVvYb",
+        "sFlh5c pT0Scc",
+    ]  # First one is external url, other is base64
+
+    ANCHOR_FIRST_RESULT_SECTION_API = "Gx5Zad fP1Qef xpd EtOod pkphOe"
 
     SLEEP_BETWEEN_REQUESTS_SEC = 3
 
@@ -51,8 +64,10 @@ class GoogleScraper(object):
         # Setup Driver
         options = webdriver.FirefoxOptions()
         options.add_argument(f"user-agent={random.choice(USER_AGENTS)}")
-        service = Service(executable_path=executable_path) if executable_path else Service()
-        
+        service = (
+            Service(executable_path=executable_path) if executable_path else Service()
+        )
+
         for option in extra_options:
             options.add_argument(option)
         self.driver: webdriver.Firefox = webdriver.Firefox(
@@ -81,7 +96,7 @@ class GoogleScraper(object):
         return self.driver.page_source
 
     @property
-    def driver_cookies(self):
+    def driver_cookies(self) -> List[Dict[str, str]]:
         self.driver.get_cookies()
 
     def validate_google_cookies(self) -> None:
@@ -128,8 +143,9 @@ class GoogleScraper(object):
                     "q": GoogleScraper.encode_search_str(search_str=search_str),
                 }
             )
-            params["q"] = search_str
-            return GOOGLE_HOME + SEARCH_PATH + f"?{urllib.parse.urlencode(params)}"
+
+        params["q"] = search_str
+        return GOOGLE_HOME + SEARCH_PATH + f"?{urllib.parse.urlencode(params)}"
 
     def _maps_get_current_page_state(self) -> List[Any]:
         """
@@ -142,7 +158,7 @@ class GoogleScraper(object):
         result = json.loads(script_content)
         return result
 
-    def _search_on(self, url_link: str) -> None:
+    def _go_to(self, url_link: str) -> None:
         """
         makes the driver go to the given url
         """
@@ -153,9 +169,11 @@ class GoogleScraper(object):
         if google maps is uncertains, it returns a list of result
         this functions selects the first one (the best candidate ?) and makes the driver go to the result
         """
-        top_result = self._get_element_by_class_names(class_names=self.ANCHOR_MAPS_ITEM_IN_RESULT_LIST, tag_type="*")
+        top_result = self._get_element_by_class_names(
+            class_names=self.ANCHOR_MAPS_ITEM_IN_RESULT_LIST, tag_type="*"
+        )
         link = top_result.get_attribute("href")
-        self._search_on(link)
+        self._go_to(link)
 
     def _get_maps_result(self, search_str: str) -> None:
         """
@@ -164,14 +182,16 @@ class GoogleScraper(object):
         """
 
         url_to_request = self._create_url_link(search_str=search_str, type="maps")
-        self._search_on(url_link=url_to_request)
+        self._go_to(url_link=url_to_request)
         if self.ANCHOR_MAPS_FOR_MULTIPLE_RESULTS[0] in self.current_page_source:
             print(
                 f"WARNING: Google returned multiples results on {search_str}, taking the first candidate"
             )
             self._maps_go_to_first_result_from_multiple()
 
-    def _get_element_by_class_names(self, class_names: List[str], tag_type="div") -> WebElement:
+    def _get_element_by_class_names(
+        self, class_names: List[str], tag_type="div"
+    ) -> WebElement:
         for class_name in class_names:
             try:
                 return self.driver.find_element(
@@ -180,7 +200,9 @@ class GoogleScraper(object):
                 )
             except NoSuchElementException as e:
                 continue
-        raise NoSuchElementException(f"Could not find element with class names {class_names}")
+        raise NoSuchElementException(
+            f"Could not find element with class names {class_names}"
+        )
 
     def get_maps_coordinates(
         self, search_str: str, take_first_on_multiple_res: bool = True
@@ -201,9 +223,11 @@ class GoogleScraper(object):
         Retrieves the address given a search string
         """
         self._get_maps_result(search_str=search_str)
-        return self.driver.find_element(
-            By.XPATH, '//button[@data-item-id="address"]'
-        ).get_attribute("aria-label").replace("Adresse: ", "")
+        return (
+            self.driver.find_element(By.XPATH, '//button[@data-item-id="address"]')
+            .get_attribute("aria-label")
+            .replace("Adresse: ", "")
+        )
 
     def _slow_down(self) -> None:
         self.SLEEP_BETWEEN_REQUESTS_SEC += 1
@@ -223,14 +247,15 @@ class GoogleScraper(object):
     )
     def _get_img_url_for_first_result(self, search_str: str) -> str:
         url_to_request = self._create_url_link(search_str=search_str, type="images")
-        self._search_on(url_link=url_to_request)
+        self._go_to(url_link=url_to_request)
 
-        first_result = self._get_element_by_class_names(class_names=self.ANCHOR_SEARCH_FOR_IMG_RESULT_DIV, tag_type="div")
+        first_result = self._get_element_by_class_names(
+            class_names=self.ANCHOR_SEARCH_FOR_IMG_RESULT_DIV, tag_type="div"
+        )
         first_result.click()
 
         img_container_img_tag = self._get_element_by_class_names(
-            class_names=self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS,
-            tag_type="img"
+            class_names=self.ANCHOR_SIDE_BAR_IMG_WITH_SOURCE_CLASS, tag_type="img"
         )
 
         url = img_container_img_tag.get_attribute("src")
@@ -269,6 +294,22 @@ class GoogleScraper(object):
                 return None
 
         return result
+
+    def get_first_redirection_url(self, search_str: str) -> str:
+        """
+        Retrieves the first redirection url for the given search string
+        """
+        url = self._create_url_link(search_str="Musée du Louvre", type=None)
+        cookies_dict = {cookie["name"]: cookie["value"] for cookie in self.cookies}
+
+        response = requests.get(url, cookies=cookies_dict)
+        soup = bs4.BeautifulSoup(response.text, "html.parser")
+        return (
+            soup.find("div", class_=self.ANCHOR_FIRST_RESULT_SECTION_API)
+            .find("a")["href"]
+            .strip("/url?q=")
+            .split("&")[0]
+        )
 
 
 def safe_get(data: List[List[float | int]], *keys: int):
