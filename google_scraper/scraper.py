@@ -302,7 +302,7 @@ class GoogleScraper(object):
         """
         redir_urls_gen = self.get_redirection_urls(search_str=search_str)
         return next(redir_urls_gen, None)
-    
+
     def get_redirection_urls(self, search_str: str) -> Generator[str, None, None]:
         """
         Retrieves the redirection urls for the given search string
@@ -313,13 +313,15 @@ class GoogleScraper(object):
         response = requests.get(url, cookies=cookies_dict)
         soup = bs4.BeautifulSoup(response.text, "html.parser")
         for result in soup.find_all("div", class_=self.ANCHOR_FIRST_RESULT_SECTION_API):
-            yield urllib.parse.unquote(result.find("a")["href"].strip("/url?q=").split("&")[0])
+            yield urllib.parse.unquote(
+                result.find("a")["href"].strip("/url?q=").split("&")[0]
+            )
 
     def get_wikipedia_link(self, search_str: str) -> Optional[str]:
         """
         Retrieves the wikipedia link for the given search string
         """
-        search_enhanced = f'{search_str}' + ' wikipedia' 
+        search_enhanced = f"{search_str}" + " wikipedia"
         print(search_enhanced)
         candidates = self.get_redirection_urls(search_enhanced)
         for candidate in candidates:
@@ -327,25 +329,33 @@ class GoogleScraper(object):
             if "wikipedia" in candidate:
                 print(f"Found wikipedia link: {candidate}")
                 return candidate
-        
+
     def get_short_summary(self, search_str: str) -> Optional[str]:
         """
         Retrieves the short summary for the given search string
         """
         ANCHOR = "mw-content-ltr"
-        TO_SKIP_TEXT_IDENTIFIERS = ["articles homonymes", "modifier le code ", "articles homophone", "modifier"]
+        TO_SKIP_TEXT_IDENTIFIERS = [
+            "articles homonymes",
+            "modifier le code ",
+            "articles homophone",
+            "modifier",
+        ]
         paragraph_threshold = 4
         wikipedia_link = self.get_wikipedia_link(search_str=search_str)
         if not wikipedia_link:
             return None
-        
-        response = requests.get(wikipedia_link, cookies={cookie["name"]: cookie["value"] for cookie in self.cookies})
+
+        response = requests.get(
+            wikipedia_link,
+            cookies={cookie["name"]: cookie["value"] for cookie in self.cookies},
+        )
         with open("temp.html", "w") as f:
             f.write(response.text)
         soup = bs4.BeautifulSoup(response.text, "html.parser")
 
-        div = soup.find('div', class_=ANCHOR)
-        paragraphs = div.find_all('p')
+        div = soup.find("div", class_=ANCHOR)
+        paragraphs = div.find_all("p")
         description = ""
         for i, _p in enumerate(paragraphs):
             if any([text in _p.text.lower() for text in TO_SKIP_TEXT_IDENTIFIERS]):
@@ -358,10 +368,6 @@ class GoogleScraper(object):
         description = re.sub(r"\[.*?\]", "", description)
 
         return description
-
-
-
-        
 
 
 def safe_get(data: List[List[float | int]], *keys: int):
