@@ -22,4 +22,3 @@ tzdata==2023.4
 urllib3==2.1.0
 wsproto==1.2.0
 beautifulsoup4==4.12.3
-bs4==0.0.2
