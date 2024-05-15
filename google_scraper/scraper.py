@@ -350,8 +350,6 @@ class GoogleScraper(object):
             wikipedia_link,
             cookies={cookie["name"]: cookie["value"] for cookie in self.cookies},
         )
-        with open("temp.html", "w") as f:
-            f.write(response.text)
         soup = bs4.BeautifulSoup(response.text, "html.parser")
 
         div = soup.find("div", class_=ANCHOR)
