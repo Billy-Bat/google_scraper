@@ -1,3 +1,21 @@
+## v1.1.0 (2024-05-15)
+
+### Feat
+
+- **scraper**: add summary scrap
+- **scraper**: add a scrap to first url in results
+- **scraper**: add service
+- **scraper**: allow exec path
+- **scraper**: allow exec path
+- **scraper**: refacto allow multiple tags for single search
+- **scraper**: adding address scraping from google maps
+
+### Fix
+
+- **scraper**: trailing kwarg removed
+- **scraper**: missing comma
+- **scraper**: anchor
+
 ## v1.0.2 (2024-01-02)
 
 ### Fix
