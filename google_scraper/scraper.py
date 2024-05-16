@@ -267,12 +267,7 @@ class GoogleScraper(object):
         Retrieves the image bytes content for the given search string
         The first result from google images is taken
         """
-        try:
-            url_img = self._get_img_url_for_first_result(search_str=search_str)
-        except NoSuchElementException as e:
-            print(f"Fail: see error {e}, retrying once after waiting 1min")
-            time.sleep(60)
-            url_img = self._get_img_url_for_first_result(search_str=search_str)
+        url_img = self._get_img_url_for_first_result(search_str=search_str)
 
         if "data:image" in url_img:
             print(
@@ -317,14 +312,16 @@ class GoogleScraper(object):
                 result.find("a")["href"].strip("/url?q=").split("&")[0]
             )
 
-    def get_wikipedia_link(self, search_str: str) -> Optional[str]:
+    def get_wikipedia_link(self, search_str: str, candidate_threshold: int = 1) -> Optional[str]:
         """
         Retrieves the wikipedia link for the given search string
         """
         search_enhanced = f"{search_str}" + " wikipedia"
         print(search_enhanced)
         candidates = self.get_redirection_urls(search_enhanced)
-        for candidate in candidates:
+        for i, candidate in enumerate(candidates):
+            if i > candidate_threshold:
+                return
             print(f"Checking candidate: {candidate}")
             if "wikipedia" in candidate:
                 print(f"Found wikipedia link: {candidate}")
