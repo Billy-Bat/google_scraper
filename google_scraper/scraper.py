@@ -305,7 +305,7 @@ class GoogleScraper(object):
         url = self._create_url_link(search_str=search_str, type=None)
         cookies_dict = {cookie["name"]: cookie["value"] for cookie in self.cookies}
 
-        response = requests.get(url, cookies=cookies_dict)
+        response = requests.get(url, cookies=cookies_dict, headers={"User-Agent": random.choice(USER_AGENTS)})
         soup = bs4.BeautifulSoup(response.text, "html.parser")
         for result in soup.find_all("div", class_=self.ANCHOR_FIRST_RESULT_SECTION_API):
             yield urllib.parse.unquote(
@@ -339,30 +339,25 @@ class GoogleScraper(object):
             "modifier",
         ]
         paragraph_threshold = 4
-        wikipedia_link = self.get_wikipedia_link(search_str=search_str)
-        if not wikipedia_link:
-            return None
+        main_link = self.get_first_redirection_url(search_str=search_str)
 
         response = requests.get(
-            wikipedia_link,
+            main_link,
             cookies={cookie["name"]: cookie["value"] for cookie in self.cookies},
         )
         soup = bs4.BeautifulSoup(response.text, "html.parser")
 
-        div = soup.find("div", class_=ANCHOR)
-        paragraphs = div.find_all("p")
+        paragraphs = soup.find_all("p")
         description = ""
         for i, _p in enumerate(paragraphs):
-            if any([text in _p.text.lower() for text in TO_SKIP_TEXT_IDENTIFIERS]):
-                continue
-            description += _p.text
-            if i > paragraph_threshold:
-                break
-
+            description += "\n" + _p.text
+            
         # remove all refs [XX] in the text
         description = re.sub(r"\[.*?\]", "", description)
-
-        return description
+        print(description)
+        print("*"*50)
+        print("Main link: ", main_link)
+        return None
 
 
 def safe_get(data: List[List[float | int]], *keys: int):
