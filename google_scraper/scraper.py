@@ -277,7 +277,7 @@ class GoogleScraper(object):
         else:
             try:
                 content = requests.get(
-                    url=url_img, headers={"User-Agent": random.choice(USER_AGENTS)}
+                    url=url_img, headers={"User-Agent": random.choice(USER_AGENTS)}, verify=False
                 )
                 result = content.content
             except requests.exceptions.SSLError as e:
